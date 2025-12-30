@@ -1,23 +1,28 @@
+import { User, ShoppingCart, Package } from "lucide-react";
+
 const steps = [
   {
     number: "1",
     title: "Créez votre compte ou entrez en invité",
-    description: "Inscription rapide en 30 secondes. Aucune carte bancaire requise pour commencer.",
-    icon: "👤",
+    description:
+      "Inscription rapide en 30 secondes. Aucune carte bancaire requise pour commencer.",
+    icon: <User className="w-16 h-16" />,
   },
   {
     number: "2",
     title: "Commandez ou prenez rendez-vous",
-    description: "Recherchez vos médicaments ou choisissez votre laboratoire. Sélectionnez l'horaire qui vous convient.",
-    icon: "🛒",
+    description:
+      "Recherchez vos médicaments ou choisissez votre laboratoire. Sélectionnez l'horaire qui vous convient.",
+    icon: <ShoppingCart className="w-16 h-16" />,
   },
   {
     number: "3",
     title: "Payez et suivez en temps réel",
-    description: "Paiement sécurisé par Mobile Money ou carte. Suivez votre commande ou rendez-vous en direct.",
-    icon: "📦",
+    description:
+      "Paiement sécurisé par Mobile Money ou carte. Suivez votre commande ou rendez-vous en direct.",
+    icon: <Package className="w-16 h-16" />,
   },
-]
+];
 
 export default function HowItWorks() {
   return (
@@ -43,7 +48,7 @@ export default function HowItWorks() {
                 </div>
 
                 {/* Icon */}
-                <div className="text-6xl mb-4">{step.icon}</div>
+                <div className="mb-4">{step.icon}</div>
 
                 {/* Content */}
                 <h3 className="text-2xl font-semibold mb-3 text-gray-800">
@@ -59,7 +64,10 @@ export default function HowItWorks() {
 
         {/* CTA after steps */}
         <div className="text-center mt-16">
-          <a href="#newsletter" className="inline-block bg-gradient-to-r from-green-600 to-emerald-600 text-white px-10 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105">
+          <a
+            href="#newsletter"
+            className="inline-block bg-gradient-to-r from-green-600 to-emerald-600 text-white px-10 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
+          >
             Commencer maintenant
           </a>
           <p className="text-sm text-gray-500 mt-4">
@@ -68,5 +76,5 @@ export default function HowItWorks() {
         </div>
       </div>
     </section>
-  )
+  );
 }
