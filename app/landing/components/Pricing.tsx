@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import ContactModal from "@/app/components/ContactModal";
 import {
   Star,
@@ -9,6 +10,10 @@ import {
   Waves,
   Phone,
 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+
 const plans = [
   {
     name: "Patients",
@@ -34,7 +39,7 @@ const plans = [
       "Tarification sur devis, tarifs raisonnables selon vos besoins",
     features: [
       "Prise de rendez-vous en laboratoire",
-      "Réception des résultats dans l’app",
+      "Réception des résultats dans l'app",
       "Paiement Mobile Money 100% sécurisé",
       "Fonctionne à 70% sans Internet",
       "Support par email",
@@ -62,9 +67,19 @@ const plans = [
   },
 ];
 
+const payments = [
+  { icon: Smartphone, label: "Orange Money" },
+  { icon: CreditCard, label: "MTN Money" },
+  { icon: Waves, label: "Wave" },
+  { icon: Phone, label: "Moov Money" },
+  { icon: CreditCard, label: "Carte bancaire" },
+];
+
 export default function Pricing() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [contactContext, setContactContext] = useState<string | null>(null);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   function openContact(planName: string) {
     setContactContext(planName);
@@ -76,140 +91,167 @@ export default function Pricing() {
     setContactContext(null);
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      staggerChildren: 0.15,
+      delayChildren: 0.2,
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+    },
+  };
+
   return (
     <section
       id="pricing"
-      className="py-20 px-6 bg-gradient-to-br from-gray-50 to-green-50 scroll-mt-20"
+      ref={ref}
+      className="py-20 px-6 bg-primary-bg scroll-mt-20 relative overflow-hidden"
     >
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Tarifs transparents</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-text-light">
+            Tarifs transparents
+          </h2>
+          <p className="text-lg text-text-light/80 max-w-2xl mx-auto">
             Choisissez le plan qui vous convient. Tous les plans acceptent
             Mobile Money et cartes bancaires.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
+        >
           {plans.map((plan, index) => (
-            <div
+            <motion.div
               key={index}
-              className={`rounded-3xl p-8 ${
-                plan.highlighted
-                  ? "bg-gradient-to-br from-green-600 to-emerald-600 text-white shadow-2xl scale-105 border-4 border-green-400"
-                  : "bg-white border-2 border-gray-200"
-              } transition-all hover:scale-105`}
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="h-full"
             >
-              {plan.highlighted && (
-                <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-sm font-medium mb-4">
-                  <Star className="inline w-4 h-4 mr-1" /> Plus populaire
-                </div>
-              )}
-
-              <h3
-                className={`text-2xl font-bold mb-2 ${plan.highlighted ? "text-white" : "text-gray-800"}`}
+              <Card
+                className={`h-full border-2 transition-colors shadow-lg hover:shadow-xl ${
+                  plan.highlighted
+                    ? "border-accent-primary bg-secondary-bg hover:border-accent-primary-hover"
+                    : "border-border/50 bg-card hover:border-accent-primary/50"
+                }`}
               >
-                {plan.name}
-              </h3>
-
-              <div className="mb-4">
-                <span
-                  className={`text-5xl font-bold ${plan.highlighted ? "text-white" : "text-green-600"}`}
-                >
-                  {plan.price}
-                </span>
-                {plan.period && (
-                  <span
-                    className={`text-lg ${plan.highlighted ? "text-green-100" : "text-gray-600"}`}
-                  >
-                    {" "}
-                    {plan.period}
-                  </span>
-                )}
-              </div>
-
-              <p
-                className={`mb-6 ${plan.highlighted ? "text-green-100" : "text-gray-600"}`}
-              >
-                {plan.description}
-              </p>
-
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Check
-                      className={`w-5 h-5 mt-0.5 ${plan.highlighted ? "text-white" : "text-green-600"}`}
-                    />
-                    <span
-                      className={`text-sm ${plan.highlighted ? "text-green-50" : "text-gray-700"}`}
-                    >
-                      {feature}
+                <CardHeader>
+                  {plan.highlighted && (
+                    <Badge className="bg-accent-primary text-accent-primary-foreground mb-4 w-fit">
+                      <Star className="w-3 h-3 mr-1.5" />
+                      Plus populaire
+                    </Badge>
+                  )}
+                  ,
+                  <CardTitle className="text-2xl text-text-dark">
+                    {plan.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4">
+                    <span className="text-5xl font-bold text-text-dark">
+                      {plan.price}
                     </span>
-                  </li>
-                ))}
-              </ul>
+                    {plan.period && (
+                      <span className="text-lg text-text-dark/70">
+                        {" "}
+                        ,{plan.period},
+                      </span>
+                    )}
+                    ,
+                  </div>
 
-              {plan.cta &&
-                (plan.cta === "Nous contacter" ? (
-                  <button
-                    type="button"
-                    onClick={() => openContact(plan.name)}
-                    className={`block w-full text-center px-6 py-4 rounded-xl font-semibold transition-all ${
-                      plan.highlighted
-                        ? "bg-white text-green-600 hover:bg-green-50 shadow-lg"
-                        : "bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:shadow-xl"
-                    }`}
-                  >
-                    {plan.cta}
-                  </button>
-                ) : (
-                  <a
-                    href={plan.href}
-                    className={`block w-full text-center px-6 py-4 rounded-xl font-semibold transition-all ${
-                      plan.highlighted
-                        ? "bg-white text-green-600 hover:bg-green-50 shadow-lg"
-                        : "bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:shadow-xl"
-                    }`}
-                  >
-                    {plan.cta}
-                  </a>
-                ))}
-            </div>
+                  <p className="mb-6 text-text-dark/70">{plan.description}</p>
+
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature, i) => (
+                      <motion.li
+                        key={i}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ delay: index * 0.15 + i * 0.05 }}
+                        className="flex items-start gap-3"
+                      >
+                        <Check className="w-5 h-5 mt-0.5 text-accent-primary flex-shrink-0" />
+                        <span className="text-sm text-text-dark">
+                          {feature}
+                        </span>
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  {plan.cta &&
+                    (plan.cta === "Nous contacter" ? (
+                      <Button
+                        onClick={() => openContact(plan.name)}
+                        className="w-full bg-accent-primary text-accent-primary-foreground hover:bg-accent-primary-hover rounded-full"
+                      >
+                        {plan.cta}
+                      </Button>
+                    ) : (
+                      <Button
+                        asChild
+                        className="w-full bg-accent-primary text-accent-primary-foreground hover:bg-accent-primary-hover rounded-full"
+                      >
+                        <a href={plan.href}>{plan.cta}</a>
+                      </Button>
+                    ))}
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Payment methods */}
-        <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-md">
-          <h3 className="text-xl font-bold mb-6 text-center">
-            Moyens de paiement acceptés
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 items-center justify-items-center">
-            <div className="text-center">
-              <Smartphone className="w-16 h-16 mb-2" />
-              <p className="text-sm font-semibold text-gray-700">
-                Orange Money
-              </p>
-            </div>
-            <div className="text-center">
-              <CreditCard className="w-16 h-16 mb-2" />
-              <p className="text-sm font-semibold text-gray-700">MTN Money</p>
-            </div>
-            <div className="text-center">
-              <Waves className="w-16 h-16 mb-2" />
-              <p className="text-sm font-semibold text-gray-700">Wave</p>
-            </div>
-            <div className="text-center">
-              <Phone className="w-16 h-16 mb-2" />
-              <p className="text-sm font-semibold text-gray-700">Moov Money</p>
-            </div>
-            <div className="text-center">
-              <CreditCard className="w-16 h-16 mb-2" />
-              <p className="text-sm font-semibold text-gray-700">
-                Carte bancaire
-              </p>
-            </div>
-          </div>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.6, duration: 0.6 }}
+        >
+          <Card className="border-2 border-accent-primary/30 bg-secondary-bg shadow-lg">
+            <CardContent className="p-8">
+              <h3 className="text-xl font-bold mb-6 text-center text-text-dark">
+                Moyens de paiement acceptés
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-6 items-center justify-items-center">
+                {payments.map((payment, index) => {
+                  const Icon = payment.icon;
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                      transition={{ delay: 0.8 + index * 0.1 }}
+                      whileHover={{ y: -5, scale: 1.1 }}
+                      className="text-center"
+                    >
+                      <Icon className="w-16 h-16 mb-2 mx-auto text-primary-bg" />
+                      <p className="text-sm font-semibold text-text-dark">
+                        {payment.label}
+                      </p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         <ContactModal
           open={isContactOpen}

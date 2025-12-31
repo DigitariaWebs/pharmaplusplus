@@ -1,54 +1,64 @@
-"use client"
-import Image from 'next/image'
-import { useState } from 'react'
-import ContactModal from '@/app/components/ContactModal'
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+import ContactModal from "@/app/components/ContactModal";
 
 const footerLinks = {
   product: [
-    { name: 'Fonctionnalités', href: '#features' },
-    { name: 'Comment ça marche', href: '#how-it-works' },
-    { name: 'Tarifs', href: '#pricing' },
-    { name: 'FAQ', href: '#faq' },
+    { name: "Fonctionnalités", href: "#features" },
+    { name: "Comment ça marche", href: "#how-it-works" },
+    { name: "Tarifs", href: "#pricing" },
+    { name: "FAQ", href: "#faq" },
   ],
   professional: [
-    { name: 'Pour les pharmacies', href: '#professionals' },
-    { name: 'Pour les laboratoires', href: '#professionals' },
-    { name: 'Devenir partenaire', href: '#join' },
-    { name: 'Espace pro', href: '/login-pro' },
+    { name: "Pour les pharmacies", href: "#professionals" },
+    { name: "Pour les laboratoires", href: "#professionals" },
+    { name: "Devenir partenaire", href: "#join" },
+    { name: "Espace pro", href: "/login-pro" },
   ],
   company: [
-    { name: 'À propos', href: '#about' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Carrières', href: '/careers' },
-    { name: 'Contact', href: '#contact' },
+    { name: "À propos", href: "#about" },
+    { name: "Blog", href: "/blog" },
+    { name: "Carrières", href: "/careers" },
+    { name: "Contact", href: "#contact" },
   ],
   legal: [
-    { name: 'Mentions légales', href: '/legal' },
-    { name: 'Confidentialité', href: '/privacy' },
-    { name: 'CGU', href: '/terms' },
-    { name: 'Cookies', href: '/cookies' },
+    { name: "Mentions légales", href: "/legal" },
+    { name: "Confidentialité", href: "/privacy" },
+    { name: "CGU", href: "/terms" },
+    { name: "Cookies", href: "/cookies" },
   ],
-}
+};
 
 const socialLinks = [
-  { name: 'Facebook', icon: '📘', href: 'https://facebook.com/pharmaplus' },
-  { name: 'Twitter', icon: '🐦', href: 'https://twitter.com/pharmaplus_africa' },
-  { name: 'LinkedIn', icon: '💼', href: 'https://linkedin.com/company/pharmaplus' },
-  { name: 'Instagram', icon: '📷', href: 'https://instagram.com/pharmaplus' },
-]
+  { name: "Facebook", icon: "📘", href: "https://facebook.com/pharmaplus" },
+  {
+    name: "Twitter",
+    icon: "🐦",
+    href: "https://twitter.com/pharmaplus_africa",
+  },
+  {
+    name: "LinkedIn",
+    icon: "💼",
+    href: "https://linkedin.com/company/pharmaplus",
+  },
+  { name: "Instagram", icon: "📷", href: "https://instagram.com/pharmaplus" },
+];
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear()
-  const [isContactOpen, setIsContactOpen] = useState(false)
-  const [contactContext, setContactContext] = useState<string | undefined>(undefined)
+  const currentYear = new Date().getFullYear();
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [contactContext, setContactContext] = useState<string | undefined>(
+    undefined,
+  );
 
   function openContact(context?: string) {
-    setContactContext(context)
-    setIsContactOpen(true)
+    setContactContext(context);
+    setIsContactOpen(true);
   }
   function closeContact() {
-    setIsContactOpen(false)
-    setContactContext(undefined)
+    setIsContactOpen(false);
+    setContactContext(undefined);
   }
 
   return (
@@ -60,13 +70,21 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-white rounded-lg overflow-hidden flex items-center justify-center">
-                <Image src="/logo-transparent-png.png" alt="Pharma+" width={48} height={48} className="object-contain" />
+                <Image
+                  src="/logo-transparent-png.png"
+                  alt="Pharma+"
+                  width={48}
+                  height={48}
+                  className="object-contain"
+                />
               </div>
-              <span className="text-2xl font-bold text-white">Pharma<span className="text-green-400">+</span></span>
+              <span className="text-2xl font-bold text-white">
+                Pharma<span className="text-green-400">+</span>
+              </span>
             </div>
             <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-              Votre pharmacie connectée pour l'Afrique de l'Ouest. 
-              Simple, rapide, accessible.
+              Votre pharmacie connectée pour l'Afrique de l'Ouest. Simple,
+              rapide, accessible.
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social) => (
@@ -79,6 +97,7 @@ export default function Footer() {
                   {social.icon}
                 </a>
               ))}
+              ,
             </div>
           </div>
 
@@ -105,10 +124,10 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.professional.map((link) => (
                 <li key={link.name}>
-                  {link.name === 'Devenir partenaire' ? (
+                  {link.name === "Devenir partenaire" ? (
                     <button
                       type="button"
-                      onClick={() => openContact('Partenariat')}
+                      onClick={() => openContact("Partenariat")}
                       className="text-left text-sm hover:text-white transition-colors"
                     >
                       {link.name}
@@ -132,10 +151,10 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  {link.name === 'Contact' ? (
+                  {link.name === "Contact" ? (
                     <button
                       type="button"
-                      onClick={() => openContact('Contact')}
+                      onClick={() => openContact("Contact")}
                       className="text-left text-sm hover:text-white transition-colors"
                     >
                       {link.name}
@@ -219,8 +238,12 @@ export default function Footer() {
             <span>🇲🇷 Mauritanie</span>
           </div>
         </div>
-        <ContactModal open={isContactOpen} context={contactContext} onClose={closeContact} />
+        <ContactModal
+          open={isContactOpen}
+          context={contactContext}
+          onClose={closeContact}
+        />
       </div>
     </footer>
-  )
+  );
 }

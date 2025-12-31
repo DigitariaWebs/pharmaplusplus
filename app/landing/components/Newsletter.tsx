@@ -1,6 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useInView,
+  useMotionValue,
+  useSpring,
+  AnimatePresence,
+} from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
@@ -12,33 +21,20 @@ export default function Newsletter() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [count, setCount] = useState<number>(0);
-  const [displayedCount, setDisplayedCount] = useState<number>(0);
-  const animRef = useRef<number | null>(null);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
 
-  // Animation compteur (compte progressif vers la valeur cible)
+  const countValue = useMotionValue(0);
+  const rounded = useSpring(countValue, { damping: 30, stiffness: 100 });
+  const [displayedCount, setDisplayedCount] = useState(0);
+
   useEffect(() => {
-    const start = displayedCount;
-    const end = count;
-    if (start === end) return;
-
-    const duration = 600; // ms
-    const startTime = performance.now();
-
-    const tick = (now: number) => {
-      const progress = Math.min(1, (now - startTime) / duration);
-      const value = Math.round(start + (end - start) * progress);
-      setDisplayedCount(value);
-      if (progress < 1) {
-        animRef.current = requestAnimationFrame(tick);
-      }
-    };
-
-    animRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [count]);
+    countValue.set(count);
+    const unsubscribe = rounded.on("change", (latest) => {
+      setDisplayedCount(Math.round(latest));
+    });
+    return unsubscribe;
+  }, [count, countValue, rounded]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,8 +57,6 @@ export default function Newsletter() {
         setEmail("");
         setPhone("");
         setCount((prev) => prev + 1);
-
-        // Reset après 5 secondes
         setTimeout(() => setIsSubmitted(false), 5000);
       } else {
         setError(data.message || "Une erreur est survenue");
@@ -77,152 +71,191 @@ export default function Newsletter() {
   return (
     <section
       id="newsletter"
-      className="py-20 px-6 bg-gradient-to-r from-green-600 to-emerald-600 text-white scroll-mt-20"
+      ref={ref}
+      className="py-20 px-6 bg-gray-50 scroll-mt-20 relative overflow-hidden"
     >
       <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-4xl font-bold mb-4">
-          Rejoignez la liste d'attente
-        </h2>
-        <p className="text-xl text-green-100 mb-10 max-w-2xl mx-auto">
-          Soyez parmi les premiers à profiter de notre plateforme.
-          Inscrivez-vous pour être informé du lancement et bénéficier d'offres
-          exclusives.
-        </p>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">
+            Rejoignez la liste d'attente
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Soyez parmi les premiers à profiter de notre plateforme.
+            Inscrivez-vous pour être informé du lancement et bénéficier d'offres
+            exclusives.
+          </p>
+        </motion.div>
 
-        {isSubmitted ? (
-          <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 max-w-md mx-auto animate-fade-in">
-            <div className="text-5xl mb-4">✅</div>
-            <h3 className="text-2xl font-semibold mb-2">
-              Merci de votre inscription !
-            </h3>
-            <p className="text-green-100">
-              Votre demande a bien été prise en compte. Nous vous contacterons
-              avant le lancement dans votre pays.
-            </p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <div className="mb-6 text-left">
-                <h3 className="text-lg font-semibold text-white">
-                  Informations professionnelles
+        <AnimatePresence mode="wait">
+          {isSubmitted ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="max-w-md mx-auto mt-10"
+            >
+              <div className="border border-green-200 bg-white rounded-3xl p-8 shadow-sm">
+                <motion.div
+                  className="text-5xl mb-4"
+                  animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 0.6 }}
+                >
+                  ✅
+                </motion.div>
+                <h3 className="text-2xl font-semibold mb-2 text-gray-800">
+                  Merci de votre inscription !
                 </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm text-green-100 mb-1">
-                    Nom de la société
-                  </label>
-                  <input
-                    type="text"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    className="w-full px-6 py-4 rounded-xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-white/50 transition-all"
-                    placeholder="Ex: PharmaPlus Dakar"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-green-100 mb-1">
-                    Nom du responsable
-                  </label>
-                  <input
-                    type="text"
-                    value={responsible}
-                    onChange={(e) => setResponsible(e.target.value)}
-                    className="w-full px-6 py-4 rounded-xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-white/50 transition-all"
-                    placeholder="Ex: Aïssatou Ndiaye"
-                  />
-                </div>
-              </div>
-
-              <div className="mb-4 text-left">
-                <h3 className="text-lg font-semibold text-white">
-                  Coordonnées
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm text-green-100 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full px-6 py-4 rounded-xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-white/50 transition-all"
-                    placeholder="vous@exemple.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-green-100 mb-1">
-                    Téléphone (optionnel)
-                  </label>
-                  <div className="relative">
-                    <select
-                      aria-label="Indicatif du pays"
-                      value={countryCode}
-                      onChange={(e) => setCountryCode(e.target.value)}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 w-28 px-3 py-3 rounded-lg bg-white/90 text-gray-800 focus:outline-none focus:ring-4 focus:ring-white/50 transition-all border border-gray-300"
-                    >
-                      <option value="">Indicatif</option>
-                      <option value="+221">🇸🇳 +221 (Sénégal)</option>
-                      <option value="+225">🇨🇮 +225 (Côte d’Ivoire)</option>
-                      <option value="+223">🇲🇱 +223 (Mali)</option>
-                      <option value="+226">🇧🇫 +226 (Burkina Faso)</option>
-                      <option value="+227">🇳🇪 +227 (Niger)</option>
-                      <option value="+228">🇹🇬 +228 (Togo)</option>
-                      <option value="+229">🇧🇯 +229 (Bénin)</option>
-                      <option value="+233">🇬🇭 +233 (Ghana)</option>
-                      <option value="+220">🇬🇲 +220 (Gambie)</option>
-                      <option value="+224">🇬🇳 +224 (Guinée)</option>
-                      <option value="+231">🇱🇷 +231 (Libéria)</option>
-                      <option value="+232">🇸🇱 +232 (Sierra Leone)</option>
-                      <option value="+238">🇨🇻 +238 (Cap-Vert)</option>
-                      <option value="+222">🇲🇷 +222 (Mauritanie)</option>
-                    </select>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-32 pr-6 py-4 rounded-xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-white/50 transition-all border border-gray-300"
-                      placeholder="Numéro de téléphone"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-white text-green-600 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? "Inscription en cours..." : "Rejoindre la bêta"}
-              </button>
-
-              {error && (
-                <p className="text-red-200 text-sm mt-2 bg-red-500/20 px-4 py-2 rounded-lg">
-                  {error}
+                <p className="text-gray-600">
+                  Votre demande a bien été prise en compte. Nous vous
+                  contacterons avant le lancement dans votre pays.
                 </p>
-              )}
-            </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.form
+              key="form"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              onSubmit={handleSubmit}
+              className="max-w-2xl mx-auto mt-10"
+            >
+              <div className="border border-gray-200 rounded-3xl shadow-sm hover:shadow-md bg-white p-8">
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    Informations professionnelles
+                  </h3>
+                </div>
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Nom de la société
+                      </label>
+                      <input
+                        type="text"
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                        className="w-full px-6 py-4 rounded-lg bg-white border border-gray-300 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                        placeholder="Ex: PharmaPlus Dakar"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Nom du responsable
+                      </label>
+                      <input
+                        type="text"
+                        value={responsible}
+                        onChange={(e) => setResponsible(e.target.value)}
+                        className="w-full px-6 py-4 rounded-lg bg-white border border-gray-300 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                        placeholder="Ex: Aïssatou Ndiaye"
+                      />
+                    </div>
+                  </div>
 
-            <p className="text-sm text-green-100 mt-6">
-              🎁 Les 200 premiers inscrits bénéficieront de 6 mois gratuits
-            </p>
-          </form>
-        )}
+                  <div>
+                    <h3 className="mb-4 text-gray-800 font-semibold">
+                      Coordonnées
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          className="w-full px-6 py-4 rounded-lg bg-white border border-gray-300 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                          placeholder="vous@exemple.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">
+                          Téléphone (optionnel)
+                        </label>
+                        <div className="relative">
+                          <select
+                            aria-label="Indicatif du pays"
+                            value={countryCode}
+                            onChange={(e) => setCountryCode(e.target.value)}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 w-28 px-3 py-3 rounded-lg bg-white border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 z-10"
+                          >
+                            <option value="">Indicatif</option>
+                            <option value="+221">🇸🇳 +221</option>
+                            <option value="+225">🇨🇮 +225</option>
+                            <option value="+223">🇲🇱 +223</option>
+                            <option value="+226">🇧🇫 +226</option>
+                          </select>
+                          <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="w-full pl-32 pr-6 py-4 rounded-lg bg-white border border-gray-300 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                            placeholder="Numéro de téléphone"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-green-500 text-white hover:bg-green-600 px-6 py-3 rounded-full font-medium disabled:opacity-50 transition-colors"
+                  >
+                    {isLoading
+                      ? "Inscription en cours..."
+                      : "Rejoindre la bêta"}
+                  </button>
+
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-sm text-gray-500 mt-6">
+                🎁 Les 200 premiers inscrits bénéficieront de 6 mois gratuits
+              </p>
+            </motion.form>
+          )}
+        </AnimatePresence>
 
         {/* Counter */}
-        <div className="mt-16 inline-block bg-white/10 backdrop-blur-sm rounded-2xl px-8 py-4 border border-white/20">
-          <p className="text-sm text-green-100 mb-1">Déjà inscrits</p>
-          <p className="text-4xl font-bold tabular-nums">
-            {displayedCount.toLocaleString("fr-FR")}
-          </p>
-          <p className="text-sm text-green-100 mt-1">
-            personnes dans la file d'attente
-          </p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="mt-16"
+        >
+          <div className="inline-block border border-green-200 bg-white rounded-2xl px-8 py-4 shadow-sm">
+            <p className="text-sm text-green-600 mb-1 font-medium">
+              Déjà inscrits
+            </p>
+            <p className="text-4xl font-bold tabular-nums text-gray-800">
+              {displayedCount.toLocaleString("fr-FR")}
+            </p>
+            <p className="text-sm text-green-600 mt-1">
+              personnes dans la file d'attente
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

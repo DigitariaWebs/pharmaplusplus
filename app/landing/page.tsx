@@ -9,6 +9,7 @@ import Pricing from "./components/Pricing";
 import Testimonials from "./components/Testimonials";
 import FAQ from "./components/FAQ";
 import FinalCTASection from "./components/FinalCTASection";
+import Newsletter from "./components/Newsletter";
 
 export default function LandingPage() {
   return (
@@ -23,6 +24,7 @@ export default function LandingPage() {
         <Pricing />
         <Testimonials />
         <FAQ />
+        <Newsletter />
         <FinalCTASection />
       </main>
       <Footer />

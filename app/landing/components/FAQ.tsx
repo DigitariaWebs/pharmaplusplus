@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import ContactModal from "@/app/components/ContactModal";
 import { ChevronDown } from "lucide-react";
 
@@ -50,6 +51,8 @@ const faqs = [
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.1 });
 
   function openContact() {
     setIsContactOpen(true);
@@ -64,63 +67,96 @@ export default function FAQ() {
   };
 
   return (
-    <section id="faq" className="py-20 px-6 bg-white scroll-mt-20">
+    <section
+      id="faq"
+      ref={ref}
+      className="py-20 px-6 bg-white scroll-mt-20 relative overflow-hidden"
+    >
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Questions fréquentes</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">
+            Questions fréquentes
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Tout ce que vous devez savoir sur Pharma+
           </p>
-        </div>
+        </motion.div>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <div
+            <motion.div
               key={index}
-              className="border border-gray-200 rounded-2xl overflow-hidden transition-all hover:border-green-300"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
             >
-              <button
-                onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-5 flex justify-between items-center gap-4 text-left bg-white hover:bg-green-50 transition-colors"
-              >
-                <span className="font-semibold text-gray-800 text-lg pr-4">
-                  {faq.question}
-                </span>
-                <ChevronDown
-                  className={`w-6 h-6 text-green-600 transform transition-transform flex-shrink-0 ${
-                    openIndex === index ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              <div
-                className={`overflow-hidden transition-all duration-300 ${
-                  openIndex === index ? "max-h-96" : "max-h-0"
-                }`}
-              >
-                <div className="px-6 py-5 bg-gradient-to-br from-green-50 to-emerald-50 border-t border-gray-200">
-                  <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+              <div className="border border-gray-200 rounded-3xl overflow-hidden hover:border-green-300 transition-colors bg-white shadow-sm">
+                <div className="p-0">
+                  <motion.button
+                    onClick={() => toggleFAQ(index)}
+                    className="w-full px-6 py-5 flex justify-between items-center gap-4 text-left hover:bg-gray-50 transition-colors group"
+                    whileHover={{ x: 4 }}
+                  >
+                    <span className="font-semibold text-gray-800 text-lg pr-4 group-hover:text-green-600 transition-colors">
+                      {faq.question}
+                    </span>
+                    <motion.div
+                      animate={{ rotate: openIndex === index ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <ChevronDown className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    </motion.div>
+                  </motion.button>
                 </div>
+                <AnimatePresence>
+                  {openIndex === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 py-5 bg-green-50 border-t border-gray-100">
+                        <p className="text-gray-700 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-12 text-center bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200">
-          <h3 className="text-2xl font-bold mb-2">
-            Vous avez d'autres questions ?
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Notre équipe est là pour vous aider
-          </p>
-          <button
-            type="button"
-            onClick={openContact}
-            className="inline-block bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-xl transition-all hover:scale-105"
-          >
-            Contactez-nous
-          </button>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="mt-12"
+        >
+          <div className="bg-green-50 border border-green-200 rounded-3xl p-8 text-center">
+            <h3 className="text-2xl font-bold mb-2 text-gray-800">
+              Vous avez d'autres questions ?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Notre équipe est là pour vous aider
+            </p>
+            <button
+              onClick={openContact}
+              className="bg-green-500 text-white px-6 py-3 rounded-full font-medium hover:bg-green-600 transition-colors"
+            >
+              Contactez-nous
+            </button>
+          </div>
+        </motion.div>
         <ContactModal
           open={isContactOpen}
           context="FAQ"

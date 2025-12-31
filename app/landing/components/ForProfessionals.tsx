@@ -1,7 +1,8 @@
+"use client";
+
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import {
-  Pill,
-  FlaskConical,
-  ClipboardList,
   Briefcase,
   Package,
   Calendar,
@@ -11,131 +12,211 @@ import {
   Bell,
   CreditCard,
 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+
+const cards = [
+  {
+    icon: Package,
+    title: "Gestion simplifiée",
+    description:
+      "Gérez vos stocks, vos commandes et vos paiements depuis une seule interface intuitive et performante.",
+  },
+  {
+    icon: Calendar,
+    title: "Prise de rendez-vous",
+    description:
+      "Recevez et organisez vos rendez-vous de patients automatiquement. Rappels SMS et notifications inclus.",
+  },
+  {
+    icon: DollarSign,
+    title: "Abonnement flexible",
+    description:
+      "Un système d'abonnement adapté à la taille et aux besoins de votre structure. Sans engagement.",
+  },
+];
+
+const features = [
+  {
+    icon: CheckCircle,
+    title: "Visibilité accrue",
+    description:
+      "Apparaissez en priorité dans les recherches des patients à proximité",
+  },
+  {
+    icon: BarChart3,
+    title: "Analytics détaillés",
+    description: "Suivez vos performances et optimisez votre activité",
+  },
+  {
+    icon: Bell,
+    title: "Notifications en temps réel",
+    description: "Restez informé de chaque nouvelle commande ou rendez-vous",
+  },
+  {
+    icon: CreditCard,
+    title: "Paiements sécurisés",
+    description: "Recevez vos paiements directement, sans intermédiaire",
+  },
+];
 
 export default function ForProfessionals() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+      },
+    },
+  };
+
   return (
     <section
       id="professionals"
-      className="py-20 px-6 bg-gradient-to-br from-green-50 to-emerald-50 border-t border-gray-100 relative overflow-hidden scroll-mt-20"
+      ref={ref}
+      className="py-20 px-6 bg-gray-50 relative overflow-hidden scroll-mt-20"
     >
-      {/* Background pattern décoratif */}
-      <div className="absolute inset-0 opacity-5">
-        <Pill className="absolute top-10 left-10 w-32 h-32" />
-        <FlaskConical className="absolute bottom-10 right-10 w-32 h-32" />
-        <ClipboardList className="absolute top-1/2 right-1/4 w-24 h-24" />
-      </div>
-
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div className="text-center mb-12">
-          <div className="inline-block mb-4 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-            <Briefcase className="inline w-4 h-4 mr-1" /> Espace Professionnels
+      {/* Split Section - Left: Light, Right: Dark */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
+        {/* Left Side - Light Beige Background */}
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="bg-white p-12 flex flex-col justify-center"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 rounded-full text-sm font-medium mb-4 w-fit">
+            <Briefcase className="w-4 h-4 text-green-600" />
+            Espace Professionnels
           </div>
-          <h2 className="text-4xl font-bold mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">
             Pour les pharmacies et laboratoires
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-xl mb-8">
             Rejoignez notre réseau et touchez des milliers de clients à
             proximité. Simplifiez vos ventes, vos rendez-vous et vos paiements
             grâce à notre plateforme tout-en-un.
           </p>
-        </div>
-
-        <div className="flex flex-col md:flex-row justify-center gap-4 mb-16">
-          <a
-            href="/register-pro"
-            className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 text-center"
-          >
-            S'inscrire comme professionnel
-          </a>
-          <a
-            href="#professionals-info"
-            className="bg-white border-2 border-green-600 text-green-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-green-50 transition-all text-center"
-          >
-            En savoir plus
-          </a>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-md hover:shadow-xl transition-all">
-            <Package className="w-16 h-16 mb-4" />
-            <h3 className="text-2xl font-semibold mb-3">Gestion simplifiée</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Gérez vos stocks, vos commandes et vos paiements depuis une seule
-              interface intuitive et performante.
-            </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <motion.a
+              href="/register-pro"
+              className="bg-green-500 text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl inline-block"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              S'inscrire comme professionnel
+            </motion.a>
+            <motion.a
+              href="#professionals-info"
+              className="border-2 border-green-500 text-green-600 px-8 py-3 rounded-full font-medium hover:bg-green-50 inline-block"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              En savoir plus
+            </motion.a>
           </div>
+        </motion.div>
 
-          <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-md hover:shadow-xl transition-all">
-            <Calendar className="w-16 h-16 mb-4" />
-            <h3 className="text-2xl font-semibold mb-3">
-              Prise de rendez-vous
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              Recevez et organisez vos rendez-vous de patients automatiquement.
-              Rappels SMS et notifications inclus.
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-md hover:shadow-xl transition-all">
-            <DollarSign className="w-16 h-16 mb-4" />
-            <h3 className="text-2xl font-semibold mb-3">Abonnement flexible</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Un système d'abonnement adapté à la taille et aux besoins de votre
-              structure. Sans engagement.
-            </p>
-          </div>
-        </div>
-
-        {/* Benefits section */}
-        <div
-          id="professionals-info"
-          className="mt-16 bg-white rounded-3xl p-10 shadow-lg border border-gray-100 scroll-mt-20"
+        {/* Right Side - Dark Green Background */}
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="bg-gray-900 p-12 flex flex-col justify-center"
         >
-          <h3 className="text-2xl font-bold mb-8 text-center">
+          <h3 className="text-3xl md:text-4xl font-bold mb-6 text-white">
             Avantages pour les professionnels
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex items-start gap-4">
-              <CheckCircle className="w-6 h-6 mt-1" />
-              <div>
-                <h4 className="font-semibold mb-1">Visibilité accrue</h4>
-                <p className="text-gray-600 text-sm">
-                  Apparaissez en priorité dans les recherches des patients à
-                  proximité
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <BarChart3 className="w-6 h-6 mt-1" />
-              <div>
-                <h4 className="font-semibold mb-1">Analytics détaillés</h4>
-                <p className="text-gray-600 text-sm">
-                  Suivez vos performances et optimisez votre activité
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <Bell className="w-6 h-6 mt-1" />
-              <div>
-                <h4 className="font-semibold mb-1">
-                  Notifications en temps réel
-                </h4>
-                <p className="text-gray-600 text-sm">
-                  Restez informé de chaque nouvelle commande ou rendez-vous
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <CreditCard className="w-6 h-6 mt-1" />
-              <div>
-                <h4 className="font-semibold mb-1">Paiements sécurisés</h4>
-                <p className="text-gray-600 text-sm">
-                  Recevez vos paiements directement, sans intermédiaire
-                </p>
-              </div>
-            </div>
+          <div className="space-y-6">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ delay: 0.4 + index * 0.1 }}
+                  className="flex items-start gap-4"
+                >
+                  <motion.div
+                    whileHover={{ rotate: 360, scale: 1.1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Icon className="w-6 h-6 mt-1 text-green-400 flex-shrink-0" />
+                  </motion.div>
+                  <div>
+                    <h4 className="font-semibold mb-1 text-white">
+                      {feature.title}
+                    </h4>
+                    <p className="text-gray-300 text-sm">
+                      {feature.description}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
-        </div>
+        </motion.div>
+      </div>
+
+      {/* Cards Section */}
+      <div className="max-w-6xl mx-auto mt-16">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        >
+          {cards.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <motion.div
+                key={index}
+                variants={cardVariants}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="h-full"
+              >
+                <div className="h-full bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md p-8">
+                  <div className="mb-6">
+                    <motion.div
+                      className="mb-4 text-green-600"
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Icon className="w-8 h-8" />
+                    </motion.div>
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      {card.title}
+                    </h3>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 leading-relaxed">
+                      {card.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
   );

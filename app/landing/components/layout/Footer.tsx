@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Facebook, Twitter, Instagram, Linkedin, MapPin } from "lucide-react";
 import Image from "next/image";
 
@@ -14,16 +15,16 @@ export function Footer() {
       { label: "Delivery", href: "#" },
     ],
     company: [
-      { label: "About Us", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Press", href: "#" },
+      { label: "À propos", href: "#about" },
+      { label: "Carrières", href: "#" },
+      { label: "Presse", href: "#" },
       { label: "Blog", href: "#" },
     ],
     support: [
-      { label: "Help Center", href: "#" },
-      { label: "Safety", href: "#" },
-      { label: "Terms", href: "#" },
-      { label: "Privacy", href: "#" },
+      { label: "Centre d'aide", href: "#" },
+      { label: "Sécurité", href: "#" },
+      { label: "Conditions", href: "#" },
+      { label: "Confidentialité", href: "#" },
     ],
   };
 
@@ -35,127 +36,159 @@ export function Footer() {
   ];
 
   return (
-    <footer className="relative border-t border-border bg-card">
+    <footer className="relative border-t border-primary-bg-foreground/20 bg-primary-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="py-16 md:py-18 lg:py-20 xl:py-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 md:gap-10 lg:gap-12 xl:gap-12">
+        <div className="py-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           {/* Brand Column */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-2">
-            <a href="#" className="inline-block mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="col-span-2 md:col-span-3 lg:col-span-2"
+          >
+            <a href="#" className="mb-4 flex items-center gap-2">
               <Image
-                src="/logo.png"
-                alt="PharmaPlus"
-                width={180}
-                height={64}
-                className="h-16 w-auto dark:brightness-0 dark:invert"
+                src="/logo-transparent-png.png"
+                alt="Pharma+"
+                width={120}
+                height={40}
+                className="h-8 w-auto"
               />
+              <span className="text-xl font-bold text-text-light tracking-wider">
+                PHARMA+
+              </span>
             </a>
-            <p className="text-muted-foreground leading-relaxed max-w-sm mb-4">
-              Your trusted partner in pharmaceutical solutions.
+            <p className="text-text-light/80 leading-relaxed max-w-sm mb-4 text-sm">
+              Votre partenaire de confiance pour les solutions pharmaceutiques.
             </p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-              <MapPin className="w-4 h-4 text-primary" />
-              <span>Global</span>
+            <div className="flex items-center gap-2 text-sm text-text-light/80 mb-6">
+              <MapPin className="w-4 h-4 text-accent-primary" />
+              <span>Afrique de l'Ouest</span>
             </div>
-          </div>
+            <div className="flex gap-3">
+              {socialLinks.map((social, index) => {
+                const Icon = social.icon;
+                return (
+                  <motion.a
+                    key={social.label}
+                    href={social.href}
+                    aria-label={social.label}
+                    initial={{ opacity: 0, scale: 0 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-10 h-10 rounded-full bg-accent-primary/20 hover:bg-accent-primary/30 flex items-center justify-center transition-colors"
+                  >
+                    <Icon className="w-5 h-5 text-accent-primary" />
+                  </motion.a>
+                );
+              })}
+            </div>
+          </motion.div>
 
           {/* Services Links */}
-          <div>
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-muted-foreground">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1, duration: 0.6 }}
+          >
+            <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-text-light">
               Services
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {footerLinks.services.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-text-light/80 hover:text-accent-primary transition-colors"
                   >
                     {link.label}
                   </a>
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Company Links */}
-          <div>
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-muted-foreground">
-              Company
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
+            <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-text-light">
+              Entreprise
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-text-light/80 hover:text-accent-primary transition-colors"
                   >
                     {link.label}
                   </a>
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Social + Support */}
-          <div>
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-muted-foreground">
-              Social
-            </h4>
-            <div className="flex gap-2 mb-8">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    aria-label={social.label}
-                    className="w-10 h-10 rounded-xl bg-muted hover:bg-primary/10 flex items-center justify-center transition-colors group"
-                  >
-                    <Icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                  </a>
-                );
-              })}
-            </div>
-
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-muted-foreground">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-text-light">
               Support
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {footerLinks.support.slice(0, 2).map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-text-light/80 hover:text-accent-primary transition-colors"
                   >
                     {link.label}
                   </a>
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="py-6 md:py-5 lg:py-6 xl:py-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {currentYear} PharmaPlus. All rights reserved.
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="py-6 border-t border-primary-bg-foreground/20 flex flex-col sm:flex-row items-center justify-between gap-4"
+        >
+          <p className="text-sm text-text-light/80">
+            © {currentYear} Pharma+. Tous droits réservés.
           </p>
           <div className="flex items-center gap-6">
             <a
               href="#"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-text-light/80 hover:text-accent-primary transition-colors"
             >
-              Privacy
+              Confidentialité
             </a>
             <a
               href="#"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-text-light/80 hover:text-accent-primary transition-colors"
             >
-              Terms
+              Conditions
             </a>
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );

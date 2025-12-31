@@ -1,4 +1,10 @@
-import { MessageCircle, Sparkles, Star } from "lucide-react";
+"use client";
+
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { MessageCircle } from "lucide-react";
+import { Card, CardContent } from "./ui/card";
+import { Badge } from "./ui/badge";
 
 const testimonials = [
   {
@@ -21,119 +27,128 @@ const testimonials = [
   },
 ];
 
+const partners = [
+  "Pharmacie Plus",
+  "Labo Santé",
+  "MediCare",
+  "Bio Lab",
+  "Santé Express",
+  "PharmaNet",
+];
+
 export default function Testimonials() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      staggerChildren: 0.15,
+      delayChildren: 0.2,
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+    },
+  };
+
   return (
-    <section className="py-24 md:py-28 lg:py-32 xl:py-36 bg-gradient-to-b from-background via-primary/5 to-muted/20 px-6 relative overflow-hidden">
-      {/* Enhanced Background decoration */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-primary/8 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/6 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-primary/4 rounded-full blur-2xl animate-pulse delay-500" />
-
-        {/* Floating sparkles */}
-        <Sparkles className="absolute top-20 left-20 w-6 h-6 text-primary/30 animate-ping" />
-        <Sparkles className="absolute bottom-32 right-16 w-5 h-5 text-primary/25 animate-ping delay-700" />
-        <Sparkles className="absolute top-3/4 left-1/3 w-4 h-4 text-primary/35 animate-ping delay-300" />
-        <Star className="absolute bottom-20 left-16 w-3 h-3 text-primary/40 animate-spin" />
-        <Star className="absolute top-40 right-32 w-4 h-4 text-primary/30 animate-spin delay-500" />
-      </div>
-
+    <section
+      ref={ref}
+      className="py-20 px-6 bg-secondary-bg relative overflow-hidden"
+    >
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 backdrop-blur-sm text-sm font-bold mb-8 shadow-lg">
-            <MessageCircle className="w-5 h-5 text-primary animate-pulse" />
-            <span className="text-primary font-bold">Témoignages</span>
-            <div className="w-2 h-2 bg-primary rounded-full animate-ping" />
-          </div>
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 drop-shadow-lg">
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              Ils nous font confiance
-            </span>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <Badge className="mb-6 bg-accent-primary/20 text-primary-bg border-accent-primary/30">
+            <MessageCircle className="w-3 h-3 mr-1.5" />
+            Témoignages
+          </Badge>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-text-dark">
+            Ils nous font confiance
           </h2>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium drop-shadow-sm">
+          <p className="text-lg text-text-dark/70 max-w-2xl mx-auto">
             Découvrez les témoignages de nos utilisateurs et partenaires
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
+        >
           {testimonials.map((testimonial, index) => (
-            <div
+            <motion.div
               key={index}
-              className="bg-gradient-to-br from-card/90 to-card/70 border-2 border-border/50 shadow-xl hover:shadow-2xl hover:shadow-primary/20 p-8 rounded-3xl transition-all duration-500 hover:scale-110 hover:-translate-y-4 relative group backdrop-blur-sm"
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="h-full"
             >
-              {/* Enhanced hover gradient */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-primary/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              {/* Glowing border effect */}
-              <div className="absolute inset-0 rounded-3xl border-2 border-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              {/* Quote icon */}
-              <div className="absolute top-4 right-4 text-primary/40 text-4xl group-hover:text-primary transition-colors duration-300">
-                "
-              </div>
-
-              {/* Enhanced Avatar */}
-              <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full flex items-center justify-center text-2xl font-black mb-6 relative z-10 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                {testimonial.avatar}
-                <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-
-              {/* Quote */}
-              <p className="text-foreground italic text-lg mb-6 leading-relaxed relative z-10 group-hover:text-primary transition-colors duration-300">
-                {testimonial.text}
-              </p>
-
-              {/* Author */}
-              <div className="border-t-2 border-primary/20 pt-4 relative z-10 group-hover:border-primary/40 transition-colors duration-300">
-                <p className="font-bold text-foreground text-lg group-hover:text-primary transition-colors duration-300">
-                  {testimonial.name}
-                </p>
-                <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors duration-300">
-                  {testimonial.role}
-                </p>
-              </div>
-
-              {/* Decorative elements */}
-              <div className="absolute top-4 left-4 w-3 h-3 bg-primary/30 rounded-full animate-pulse" />
-              <div className="absolute bottom-4 right-4 w-2 h-2 bg-primary/40 rounded-full animate-ping delay-300" />
-              <Sparkles className="absolute top-2 left-2 w-3 h-3 text-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <Sparkles className="absolute bottom-2 right-2 w-3 h-3 text-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100" />
-            </div>
+              <Card className="h-full border-2 border-border/50 hover:border-accent-primary/50 transition-colors shadow-lg hover:shadow-xl bg-card">
+                <CardContent className="p-8">
+                  <motion.div
+                    className="w-16 h-16 bg-accent-primary/20 rounded-full flex items-center justify-center text-xl font-bold text-primary-bg mb-6"
+                    whileHover={{ rotate: 360, scale: 1.1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {testimonial.avatar}
+                  </motion.div>
+                  <p className="text-text-dark italic mb-6 leading-relaxed">
+                    "{testimonial.text}"
+                  </p>
+                  <div className="border-t border-border pt-4">
+                    <p className="font-bold text-text-dark">
+                      {testimonial.name}
+                    </p>
+                    <p className="text-sm text-text-dark/60">
+                      {testimonial.role}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Enhanced Trust badges */}
-        <div className="mt-24 text-center">
-          <p className="text-sm text-muted-foreground mb-10 font-medium">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="text-center"
+        >
+          <p className="text-sm text-text-dark/70 mb-8">
             Ils sont déjà partenaires :
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-8">
-            {[
-              "Pharmacie Plus",
-              "Labo Santé",
-              "MediCare",
-              "Bio Lab",
-              "Santé Express",
-              "PharmaNet",
-            ].map((partner, index) => (
-              <div
+          <div className="flex flex-wrap justify-center items-center gap-4">
+            {partners.map((partner, index) => (
+              <motion.div
                 key={index}
-                className="bg-gradient-to-br from-card/90 to-card/70 border-2 border-border/50 px-8 py-4 rounded-2xl font-bold text-foreground shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 hover:scale-110 hover:-translate-y-1 backdrop-blur-sm relative group"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ delay: 0.8 + index * 0.1 }}
+                whileHover={{ y: -5, scale: 1.05 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-                <span className="relative z-10">{partner}</span>
-                <div className="absolute top-2 right-2 w-2 h-2 bg-primary/40 rounded-full animate-pulse" />
-              </div>
+                <Badge
+                  variant="outline"
+                  className="px-6 py-3 text-sm font-medium border-2 border-primary-bg/30 hover:border-accent-primary/50 bg-card"
+                >
+                  {partner}
+                </Badge>
+              </motion.div>
             ))}
           </div>
-
-          {/* Decorative elements */}
-          <div className="mt-12 flex justify-center gap-4">
-            <div className="w-3 h-3 bg-primary/30 rounded-full animate-pulse" />
-            <div className="w-2 h-2 bg-primary/40 rounded-full animate-ping delay-300" />
-            <div className="w-4 h-4 bg-primary/20 rounded-full animate-pulse delay-700" />
-          </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
